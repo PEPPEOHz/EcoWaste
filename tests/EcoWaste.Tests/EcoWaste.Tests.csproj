@@ -22,5 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\EcoWaste.Api\EcoWaste.Api.csproj" />
   </ItemGroup>
+      <ItemGroup>
+      <Using Include="Xunit" />
+  </ItemGroup>
 
 </Project>
