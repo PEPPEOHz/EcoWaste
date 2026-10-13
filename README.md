@@ -44,7 +44,7 @@ EcoWaste/
 
 1. **Clone o repositório e entre na pasta**
    ```bash
-   git clone https://github.com/<seu-usuario>/EcoWaste.git
+   git clone https://github.com/<PEPPEOHz>/EcoWaste.git
    cd EcoWaste
    ```
 2. **Crie o arquivo de variáveis a partir do exemplo** e, se quiser, troque as senhas:
@@ -245,7 +245,7 @@ docker compose down -v                                     # derruba e limpa
 
 ![Local](docs/prints/07-local.png)
 
-**Link da execução do pipeline:** `https://github.com/<seu-usuario>/EcoWaste/actions`
+**Link da execução do pipeline:** `https://github.com/<PEPPEOHz>/EcoWaste/actions`
 
 ---
 
