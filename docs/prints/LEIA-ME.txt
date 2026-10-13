@@ -1,0 +1,8 @@
+Salve aqui os prints com estes nomes (são usados no README.md):
+01-pipeline.png  - aba Actions com os 5 jobs verdes
+02-build.png     - job "1. Build" aberto
+03-testes.png    - job "2. Testes automatizados" (linha "Passed!")
+04-imagem.png    - job "3. Build e push da imagem Docker" ou pacote em Packages
+05-staging.png   - job "4. Deploy Staging" com o smoke test e o /health (environment: Staging)
+06-producao.png  - job "5. Deploy Produção" com o smoke test e o /health (environment: Production)
+07-local.png     - terminal com "docker compose ps" (healthy) e o Swagger aberto no navegador

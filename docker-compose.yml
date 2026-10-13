@@ -1,0 +1,70 @@
+# =====================================================================
+#  EcoWaste - Orquestração com Docker Compose
+#  Serviços : api (ASP.NET 8)  +  db (Oracle Database 23ai Free)
+#  Redes    : frontend (exposta) e backend (interna, só api <-> db)
+#  Volumes  : oracle-data (persistência do banco)
+#  Ambientes: o mesmo arquivo serve local, staging e produção; o que muda
+#             é o arquivo de variáveis (--env-file) e o nome do projeto (-p).
+# =====================================================================
+name: ${COMPOSE_PROJECT_NAME:-ecowaste-local}
+
+services:
+  db:
+    image: gvenzl/oracle-free:23-slim-faststart
+    container_name: ${COMPOSE_PROJECT_NAME:-ecowaste-local}-db
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD}
+      APP_USER: ${DB_USER:-ecowaste}
+      APP_USER_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD}
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  api:
+    image: ${API_IMAGE:-ecowaste-api:local}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-local}
+    container_name: ${COMPOSE_PROJECT_NAME:-ecowaste-local}-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${APP_ENVIRONMENT:-Development}
+      ConnectionStrings__OracleConnection: "User Id=${DB_USER:-ecowaste};Password=${DB_PASSWORD};Data Source=db:1521/FREEPDB1;"
+      Jwt__SecretKey: ${JWT_SECRET:?defina JWT_SECRET}
+      Jwt__ExpirationMinutes: ${JWT_EXPIRATION_MINUTES:-120}
+      EnableSwagger: ${ENABLE_SWAGGER:-true}
+      APP_VERSION: ${APP_VERSION:-local}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true   # o banco não fica acessível de fora
+
+volumes:
+  oracle-data:
